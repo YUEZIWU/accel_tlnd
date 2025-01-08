@@ -1,0 +1,22 @@
+# input shapefile
+my_shp: '../inputs/test_example/nodes_for_netdesign.shp'
+
+# basic parameters, see readme for more details
+model_selection: 'milp'  # 'milp' or 'mst'
+max_dist: 500  # used both for merging and LV design if applicable
+project_name: 'test_project'
+
+# parameters to calculate the network costs ($)
+costs_params:
+  lv_cost_per_meter: 8
+  mv_cost_per_meter: 20
+  transformer_cost: 2500
+
+# parameters for the outliers exclusion
+outlier_exclusion_case: True
+eps_meters: 100
+min_samples: 5
+
+# gurobi parameters
+milp_params:
+  time_limit: 60
