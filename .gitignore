@@ -34,3 +34,5 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+results/*
+!results/.gitkeep
