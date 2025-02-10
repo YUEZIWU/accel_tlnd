@@ -1,0 +1,20 @@
+# Core data processing
+numpy
+pandas
+geopandas
+scipy
+
+# Machine Learning
+scikit-learn
+
+# Visualization
+matplotlib
+contextily
+matplotlib-scalebar
+tqdm
+
+# File handling
+pyyaml
+
+# Optional - for optimization (requires separate Gurobi license)
+gurobipy 
