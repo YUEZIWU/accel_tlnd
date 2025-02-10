@@ -1,10 +1,13 @@
 # input shapefile
-my_shp: '../inputs/test_example/nodes_for_netdesign.shp'
+my_shp: 'inputs/test_example/nodes_for_netdesign.shp'
 
 # basic parameters, see readme for more details
-model_selection: 'milp'  # 'milp' or 'mst'
+model_selection: 'mst'  # 'milp' or 'mst'
 max_dist: 500  # used both for merging and LV design if applicable
 project_name: 'test_project'
+
+# the crs to use
+epsg: 32636 # 32735 for tanzania, 32636 for uganda
 
 # parameters to calculate the network costs ($)
 costs_params:
