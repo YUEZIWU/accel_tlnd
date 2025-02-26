@@ -45,53 +45,51 @@ def check_cluster_feasibility(nodes, max_dist):
 def merge_and_cluster(nodes_gdf, max_dist):
     coords = np.array([[geom.x, geom.y] for geom in nodes_gdf.geometry])
     nodes = [(i, coords[i][0], coords[i][1]) for i in range(len(coords))]
-    clusters = [{'nodes': [n], 'customers': [n[0]]} for n in nodes]
+    clusters = [{'nodes': [n], 'customers': [n[0]], 'center': (n[1], n[2])} for n in nodes]  # Cache initial centers
     
-    # Initialize progress bar
-    # The maximum number of iterations would be n-1 where n is initial number of nodes
-    # since each successful merge reduces cluster count by 1
     total_possible_merges = len(nodes) - 1
     pbar = tqdm(total=total_possible_merges, desc="Merging clusters")
     
     improved = True
     while improved and len(clusters) > 1:
         improved = False
-
-        for c in clusters:
-            c['center'] = compute_cluster_center(c['nodes'])
+        
+        # Use cached centers instead of recomputing
         centers = np.array([c['center'] for c in clusters])
-
-        # Compute distances between cluster centers
+        
+        # Compute distances only for upper triangle to avoid redundant calculations
         cdists = distance_matrix(centers, centers)
         np.fill_diagonal(cdists, np.inf)
-
-        # Sort possible pairs by distance
-        pairs = []
-        for i in range(len(clusters)):
-            for j in range(i + 1, len(clusters)):
-                pairs.append((i, j, cdists[i, j]))
-        pairs.sort(key=lambda x: x[2])  # sort the pairs by cdists
+        
+        # Get pairs efficiently
+        rows, cols = np.where(cdists < np.inf)
+        # Only keep upper triangle to avoid duplicates
+        valid_pairs = rows < cols
+        pairs = [(rows[i], cols[i], cdists[rows[i], cols[i]]) 
+                for i in range(len(rows)) if valid_pairs[i]]
+        pairs.sort(key=lambda x: x[2])  # Sort by distance
 
         # Try merging closest pairs first
         for (i, j, d) in pairs:
             if i >= len(clusters) or j >= len(clusters):
                 continue
+                
             new_nodes = clusters[i]['nodes'] + clusters[j]['nodes']
-
-            # Check if merged cluster is feasible
             if check_cluster_feasibility(new_nodes, max_dist):
+                # Calculate center once and cache it
+                new_center = compute_cluster_center(new_nodes)
                 new_cluster = {
                     'nodes': new_nodes,
-                    'customers': clusters[i]['customers'] + clusters[j]['customers']
+                    'customers': clusters[i]['customers'] + clusters[j]['customers'],
+                    'center': new_center
                 }
-
+                
                 # Remove old clusters and add new one
                 c_del = sorted([i, j], reverse=True)
                 for cidx in c_del:
                     del clusters[cidx]
                 clusters.append(new_cluster)
                 improved = True
-                # Update progress bar based on reduction in number of clusters
                 pbar.update(1)
                 break
 
@@ -102,15 +100,12 @@ def merge_and_cluster(nodes_gdf, max_dist):
     transformer_points = []
     customer_clusters = {}
     for i, c in enumerate(clusters):
-        cx, cy = compute_cluster_center(c['nodes'])
-        transformer_points.append(Point(cx, cy))
+        transformer_points.append(Point(*c['center']))  # Use cached center
         for customer_id in c['customers']:
             customer_clusters[customer_id] = i
 
     # Create GeoDataFrames
     transformer_gdf = gpd.GeoDataFrame(geometry=transformer_points, crs=nodes_gdf.crs)
-
-    # Add cluster assignments to nodes
     nodes_gdf = nodes_gdf.copy()
     nodes_gdf['cluster'] = nodes_gdf.index.map(lambda x: customer_clusters[x])
 
