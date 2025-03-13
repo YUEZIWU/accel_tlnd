@@ -68,7 +68,8 @@ def visualize_network(nodes_gdf, transformer_gdf, lv_gdf, mv_gdf, excluded_nodes
     fig, ax = plt.subplots(figsize=(10, 10))
 
     lv_gdf.plot(ax=ax, color='tab:blue', linewidth=2, label="LV")
-    mv_gdf.plot(ax=ax, color='tab:orange', linewidth=3, linestyle='-', label="MV")
+    if mv_gdf is not None:
+        mv_gdf.plot(ax=ax, color='tab:orange', linewidth=3, linestyle='-', label="MV")
     transformer_gdf.plot(ax=ax, marker='s', color='#006633', markersize=70, zorder=3, label="TX")
     nodes_gdf.plot(ax=ax, marker='o', color='tab:red', markersize=20, label="Nodes")
     if excluded_nodes_gdf is not None:

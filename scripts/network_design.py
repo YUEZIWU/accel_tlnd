@@ -18,7 +18,6 @@ from scipy.spatial import distance_matrix
 from scipy.sparse.csgraph import minimum_spanning_tree
 from shapely.geometry import LineString, Point
 from gurobipy import Model, GRB, quicksum
-from tqdm import tqdm
 
 
 # -------------------------------------------------
@@ -46,9 +45,6 @@ def merge_and_cluster(nodes_gdf, max_dist):
     coords = np.array([[geom.x, geom.y] for geom in nodes_gdf.geometry])
     nodes = [(i, coords[i][0], coords[i][1]) for i in range(len(coords))]
     clusters = [{'nodes': [n], 'customers': [n[0]], 'center': (n[1], n[2])} for n in nodes]  # Cache initial centers
-    
-    total_possible_merges = len(nodes) - 1
-    pbar = tqdm(total=total_possible_merges, desc="Merging clusters")
     
     improved = True
     while improved and len(clusters) > 1:
@@ -90,11 +86,8 @@ def merge_and_cluster(nodes_gdf, max_dist):
                     del clusters[cidx]
                 clusters.append(new_cluster)
                 improved = True
-                pbar.update(1)
                 break
-
-    pbar.close()
-    print(f"Found {len(clusters)} clusters")
+    # print(f"Found {len(clusters)} clusters")
 
     # Create final transformer locations and cluster assignments
     transformer_points = []
@@ -119,7 +112,7 @@ def merge_and_cluster(nodes_gdf, max_dist):
 # the minimum spanning tree (MST) function
 def network_design_mst(nodes_gdf, transformer_gdf, clusters):
 
-    print("Creating LV networks using MST")
+    # print("Creating LV networks using MST")
     # initialize variables
     transformer_points = []  # store Shapely Points for each cluster center
     lv_edges = []            # will store (cluster_id, start_id, end_id, x1, y1, x2, y2)
@@ -200,7 +193,7 @@ def network_design_mst(nodes_gdf, transformer_gdf, clusters):
 # the mixed integer linear programming (MILP) function
 def network_design_milp(nodes_gdf, transformer_gdf, clusters, max_dist, milp_params):
 
-    print("Creating LV networks using MILP")
+    # print("Creating LV networks using MILP")
 
     # Initialize variables
     n_nodes = len(nodes_gdf)
@@ -208,16 +201,7 @@ def network_design_milp(nodes_gdf, transformer_gdf, clusters, max_dist, milp_par
     lv_edges = []
     customer_clusters = {}
 
-    pbar = tqdm(len(clusters), total=len(clusters), desc="Processing clusters")
-    
     for i, cluster in enumerate(clusters):
-        # Update progress bar description
-        pbar.set_postfix({
-            'cluster': f"{i+1}/{len(clusters)}", 
-            'nodes': len(cluster['nodes'])
-        })
-        pbar.update(1)  # Update progress by 1 step
-
         # Track cluster assignments
         for customer_id in cluster['customers']:
             customer_clusters[customer_id] = i
@@ -240,13 +224,11 @@ def network_design_milp(nodes_gdf, transformer_gdf, clusters, max_dist, milp_par
                                                            point_ids=ids_with_tx)
         
         if not feasible:
-            pbar.write(f"Warning: Cluster {i} not feasible")
+            print(f"Warning: Cluster {i} not feasible")
             continue
         
         # 6. Add cluster ID to edges and extend LV edges list
         lv_edges.extend((i,) + edge for edge in c_lv_edges)
-
-    pbar.close()
    
     # Create LV Network GDF
     lv_gdf = gpd.GeoDataFrame(

@@ -16,7 +16,7 @@ costs_params:
   transformer_cost: 2500
 
 # parameters for the outliers exclusion
-outlier_exclusion_case: True
+outlier_exclusion_case: False
 eps_meters: 100
 min_samples: 5
 
