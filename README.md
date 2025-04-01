@@ -53,7 +53,7 @@ pip install -r requirements.txt
 
 The algorithm begins by treating each individual node as a distinct cluster, with each cluster representing a potential transformer location. It then implements an iterative merging procedure that continues until no clusters are within the specified proximity threshold.
 
-During each iteration, the algorithm first calculates distances between all cluster center pairs and sorts them in ascending order. Starting with the closest pair, it evaluates potential mergers by calculating a new weighted center point. The merger proceeds only if the distance between this new center and every node in the potential combined cluster remains under the threshold (500m). If a merger attempt fails, the algorithm moves to the next closest pair. Upon successful merger, the cluster list updates and a new iteration begins. The process terminates when no valid mergers are possible among any cluster pairs. At this point, transformer locations are established at the center points of the final clusters.
+During each iteration, the algorithm first calculates distances between all cluster center pairs and sorts them in ascending order. Starting with the closest pair, it evaluates potential mergers by calculating a new weighted center point. The merger proceeds only if the distance between this new center and every node in the potential combined cluster remains under the threshold (e.g., 500m). If a merger attempt fails, the algorithm moves to the next closest pair. Upon successful merger, the cluster list updates and a new iteration begins. The process terminates when no valid mergers are possible among any cluster pairs. At this point, transformer locations are established at the center points of the final clusters.
 
 The algorithm's computation time scales with the number of structures:
 
@@ -62,7 +62,7 @@ The algorithm's computation time scales with the number of structures:
 - **800 structures:** ~30 seconds  
 - **4000 structures:** ~25 minutes  
 
-This indicates efficient processing for typical mini-grid scenarios (<1000 structures).
+These times represent core-seconds (CPU core - second) and may vary depending on the machine used. Some slowdown may occur when running in parallel. Overall, this performance indicates efficient processing for typical mini-grid scenarios (<1000 structures).
 
 ## LV and MV Network Design
 
