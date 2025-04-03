@@ -1,8 +1,8 @@
-# Fast Two-Level Network Design Model
+# Accelerated Two-Level Network Design Model
 
 ## Repository Structure
 
-This script processes geospatial data to design and evaluate a local network with two levels: low-voltage and medium voltage. It inputs a geospatial file and outputs the network layout along with relevant metrics.
+This script processes geospatial data to design and evaluate a local network with two levels: low-voltage and medium-voltage. It inputs a geospatial file and outputs the network layout along with relevant metrics.
 
 ```
 fast_tlnd/
