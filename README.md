@@ -75,3 +75,13 @@ This version applies standard MST algorithms to each cluster's LV design without
 
 ### MILP Approach (Gurobi license required)
 This version leverages Gurobi to achieve superior cost optimization while maintaining the 500m path distance constraint. It allows for time-capped execution, returning feasible sub-optimal solutions when needed. This overcomes the previous heuristic method's limitation of unpredictable runtime lengths while delivering more optimized network layouts. This method also achieves better (less costly) results compared to the original model.
+
+
+## A comparion between TLND and Accel-TLND
+
+The figure below compares the LV network layouts produced by TLND and Accel-TLND using both MST and MILP configurations. All methods result in identical node clustering, transformer placement, and MV layouts. TLND and the MILP configuration create branched LV structures to meet the maximum transformer-to-node distance constraint, while the MST configuration forms longer, continuous lines.
+
+<p align="center">
+  <img src="./appendix/comparison_BUTALEJA_51_4panel.png" alt="Comparison of TLND and Accel-TLND LV Layouts" width="600"/>
+</p>
+
