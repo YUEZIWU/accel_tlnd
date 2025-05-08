@@ -2,7 +2,6 @@ import numpy as np
 from sklearn.cluster import DBSCAN
 
 def exclude_outliers(nodes_gdf, eps_meters, min_samples):
-    print("Excluding outliers")
     gdf_with_clusters = detect_spatial_outliers(nodes_gdf, eps_meters, min_samples)
     stats = analyze_clusters(gdf_with_clusters)
     # sub_group the included nodes

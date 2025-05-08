@@ -1,4 +1,5 @@
 """
+
 --------------------------------------------------
 NETWORK DESIGN MODULE
 --------------------------------------------------
@@ -9,6 +10,15 @@ Contains functions for:
 --------------------------------------------------
 
 2025.1.8, yuezi
+
+
+--------------------------------------------------
+Notes for future work:
+Connect MST and MILP methods sequentially in the implementation. 
+Once the MST algorithm has completed, the node clustering results could be stored.
+In MILP algorithm, input the clusering results and bypass clustering and transformer placement steps.
+--------------------------------------------------
+
 """
 
 
@@ -322,6 +332,7 @@ def milp_cmst_gurobi(coords, max_dist, milp_params, point_ids=None):
     m = Model("CMST")
     m.setParam('OutputFlag', 0)  # No solver output, set to 1 for logs
     m.setParam('TimeLimit', milp_params["time_limit"])
+    m.setParam('Threads', milp_params["threads"])
 
     # Variables
     x = {}

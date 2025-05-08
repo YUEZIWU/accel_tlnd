@@ -22,4 +22,5 @@ min_samples: 5
 
 # gurobi parameters
 milp_params:
-  time_limit: 60
+  time_limit: 300
+  threads: 8
