@@ -21,6 +21,8 @@ def output_processing(nodes_gdf, transformer_gdf, lv_gdf, mv_gdf,
     total_costs = network_metrics['num_transformers'] * costs_params['transformer_cost'] + \
                   network_metrics['total_lv_length'] * costs_params['lv_cost_per_meter'] + \
                   network_metrics['total_mv_length'] * costs_params['mv_cost_per_meter']
+    if (network_metrics['num_transformers'] == 1) & (network_metrics['total_mv_length'] == 0): # only LV network
+        total_costs = network_metrics['total_lv_length'] * costs_params['lv_cost_per_meter'] 
     costs_per_node = total_costs / network_metrics['num_nodes']
     lv_m_per_node = network_metrics['total_lv_length'] / network_metrics['num_nodes']
     mv_m_per_node = network_metrics['total_mv_length'] / network_metrics['num_nodes']
